@@ -32,8 +32,9 @@ export default function App() {
         <div>
             <SearchContact findContact={findContact} setFindContact={setFindContact} />
             <CreateNewContact contact={contact} setContact={setContact} createNewContact={createNewContact} />
-            {findContact === "" ?
-                contacts.map(i => <ShowContact key={i.id} data={i} editContactHandler={editContactHandler} />) :
+            {
+                findContact === "" ?
+                !!contacts ?? contacts.map(i => <ShowContact key={i.id} data={i} editContactHandler={editContactHandler} />) :
                 contacts.filter(i => i.name.includes(findContact)).map(i => <ShowContact key={i.id} data={i} editContactHandler={editContactHandler} />)
             }
         </div>
