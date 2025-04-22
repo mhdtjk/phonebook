@@ -25,18 +25,20 @@ export default function App() {
 
     const editContactHandler = (contact) => (e) => {
         e.preventDefault()
-        edit(contact).then(res => setContacts(contacts.map(i => i.id !== contact.id ? i : res)) )
+        edit(contact).then(res => setContacts(contacts.map(i => i.id !== contact.id ? i : res)))
     }
 
     return (
-        <div>
-            <SearchContact findContact={findContact} setFindContact={setFindContact} />
-            <CreateNewContact contact={contact} setContact={setContact} createNewContact={createNewContact} />
-            {
-                findContact === "" ?
-                !!contacts ?? contacts.map(i => <ShowContact key={i.id} data={i} editContactHandler={editContactHandler} />) :
-                contacts.filter(i => i.name.includes(findContact)).map(i => <ShowContact key={i.id} data={i} editContactHandler={editContactHandler} />)
-            }
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ maxWidth: '500px' }}>
+                <SearchContact findContact={findContact} setFindContact={setFindContact} />
+                <CreateNewContact contact={contact} setContact={setContact} createNewContact={createNewContact} />
+                {
+                    findContact === "" ?
+                        !!contacts ?? contacts.map(i => <ShowContact key={i.id} data={i} editContactHandler={editContactHandler} />) :
+                        contacts.filter(i => i.name.includes(findContact)).map(i => <ShowContact key={i.id} data={i} editContactHandler={editContactHandler} />)
+                }
+            </div>
         </div>
     )
 }
