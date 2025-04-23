@@ -1,42 +1,54 @@
-import React, { useState, useEffect } from 'react'
-import { getAll, createNew, edit } from './services'
+import React, { useState } from 'react'
 import ShowContact from "./components/ShowContact"
 import CreateNewContact from "./components/CreateNewContact"
 import SearchContact from './components/SearchContact'
 
 export default function App() {
     const [contacts, setContacts] = useState([])
-    const [contact, setContact] = useState({ name: "", phone: "" })
     const [findContact, setFindContact] = useState("")
 
-    useEffect(() => {
-        getAll().then(res => setContacts(res))
-    }, [])
-
-    const createNewContact = (contact) => (e) => {
+    const addToContacts = (contact) => (e) => {
         e.preventDefault()
-        const newContact = {
-            name: contact.name,
-            phonenumber: contact.phone
+
+        if (contact.name === "" || contact.phone === "") {
+            alert("Please fill in all fields")
+            return
         }
-        createNew(newContact).then(res => setContacts(contacts.concat(res)))
-        setContact({ name: "", phone: "" })
+        if (contacts.some(i => i.name === contact.name)) {
+            alert("Contact already exists")
+            return
+        }
+
+        const newContact = {
+            id: Date.now(),
+            name: contact.name,
+            phone: contact.phone
+        }
+
+        setContacts(prev => [...prev, newContact])
     }
 
-    const editContactHandler = (contact) => (e) => {
+    const editContact = (contact) => (e) => {
         e.preventDefault()
-        edit(contact).then(res => setContacts(contacts.map(i => i.id !== contact.id ? i : res)))
+        if (contact.name === "" || contact.phone === "") {
+            alert("Please fill in all fields")
+            return
+        }
+        setContacts(contacts.map(i => i.id !== contact.id ? i : { ...i, name: contact.name, phone: contact.phone }))
+    }
+
+    const deleteContact = (contact) => {
+        setContacts(contacts.filter(i => i.name !== contact.name))
     }
 
     return (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-            <div style={{ maxWidth: '500px' }}>
+            <div style={{ maxWidth: '600px' }}>
                 <SearchContact findContact={findContact} setFindContact={setFindContact} />
-                <CreateNewContact contact={contact} setContact={setContact} createNewContact={createNewContact} />
-                {
-                    findContact === "" ?
-                        !!contacts ?? contacts.map(i => <ShowContact key={i.id} data={i} editContactHandler={editContactHandler} />) :
-                        contacts.filter(i => i.name.includes(findContact)).map(i => <ShowContact key={i.id} data={i} editContactHandler={editContactHandler} />)
+                <CreateNewContact addToContacts={addToContacts} />
+                {findContact === "" ?
+                    contacts.map(i => <ShowContact key={i.id} data={i} editContactHandler={editContact} deleteContactHandler={deleteContact} />) :
+                    contacts.filter(i => i.name.includes(findContact)).map(i => <ShowContact key={i.id} data={i} editContactHandler={editContact} deleteContactHandler={deleteContact} />)
                 }
             </div>
         </div>
